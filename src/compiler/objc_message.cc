@@ -1079,11 +1079,15 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
             const FieldDescriptor* field = descriptor_->field(i);
             
             if (field->is_required()) {
+                std::string capName = UnderscoresToCapitalizedCamelCase(field);
+                if (capName == "Id") {
+                    capName = "Identity";
+                }
                 printer->Print(
                                "if (!self.has$capitalized_name$) {\n"
                                "  return NO;\n"
                                "}\n",
-                               "capitalized_name", UnderscoresToCapitalizedCamelCase(field));
+                               "capitalized_name", capName);
             }
         }
         
