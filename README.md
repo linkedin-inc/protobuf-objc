@@ -25,7 +25,7 @@ How To Install Protobuf
 4. (optional) Create a symlink to your Protobuf compiler.
 `ln -s /usr/local/Cellar/protobuf/2.6.1/bin/protoc /usr/local/bin`
 5. Clone this repository.
-`git clone https://github.com/alexeyxo/protobuf-objc.git`
+`git clone https://github.com/linkedin-inc/protobuf-objc.git`
 6. Build it!
 `./scripts/build.sh`
 
