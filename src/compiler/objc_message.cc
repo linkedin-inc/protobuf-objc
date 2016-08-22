@@ -306,6 +306,7 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
         }
         
         GenerateIsInitializedHeader(printer);
+        GenerateUninitializedFieldHeader(printer);
         GenerateMessageSerializationMethodsHeader(printer);
         
         printer->Print(
@@ -385,6 +386,7 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
         }
         
         GenerateIsInitializedSource(printer);
+        GenerateUninitializedFieldSource(printer);
         GenerateMessageSerializationMethodsSource(printer);
         
         GenerateParseFromMethodsSource(printer);
@@ -544,6 +546,12 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
     void MessageGenerator::GenerateIsInitializedHeader(io::Printer* printer) {
         printer->Print(
                        "- (BOOL) isInitialized;\n");
+    }
+    
+    
+    void MessageGenerator::GenerateUninitializedFieldHeader(io::Printer* printer) {
+        printer->Print(
+                       "- (NSString *) uninitializedField;\n");
     }
     
     
@@ -1143,6 +1151,88 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
         printer->Outdent();
         printer->Print(
                        "  return YES;\n"
+                       "}\n");
+    }
+    
+    
+    void MessageGenerator::GenerateUninitializedFieldSource(io::Printer* printer) {
+        printer->Print(
+                       "- (NSString *) uninitializedField {\n");
+        printer->Indent();
+        
+        // Check that all required fields in this message are set.
+        // TODO(kenton):  We can optimize this when we switch to putting all the
+        //   "has" fields into a single bitfield.
+        for (int i = 0; i < descriptor_->field_count(); i++) {
+            const FieldDescriptor* field = descriptor_->field(i);
+            
+            if (field->is_required()) {
+                std::string capName = UnderscoresToCapitalizedCamelCase(field);
+                if (capName == "Id") {
+                    capName = "Identity";
+                }
+                map<string,string> vars;
+                vars["capitalized_name"] = capName;
+                vars["name"] = UnderscoresToCamelCase(field);
+                printer->Print(vars,
+                               "if (!self.has$capitalized_name$) {\n"
+                               "  return @\"$name$\";\n"
+                               "}\n");
+            }
+        }
+        
+        // Now check that all embedded messages are initialized.
+        for (int i = 0; i < descriptor_->field_count(); i++) {
+            const FieldDescriptor* field = descriptor_->field(i);
+            if (field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE &&
+                HasRequiredFields(field->message_type())) {
+                
+                map<string,string> vars;
+                vars["type"] = ClassName(field->message_type());
+                vars["name"] = UnderscoresToCamelCase(field);
+                vars["capitalized_name"] = UnderscoresToCapitalizedCamelCase(field);
+                
+                switch (field->label()) {
+                    case FieldDescriptor::LABEL_REQUIRED:
+                        printer->Print(vars,
+                                       "if (!self.$name$.isInitialized) {\n"
+                                       "  return @\"$name$\";\n"
+                                       "}\n");
+                        break;
+                    case FieldDescriptor::LABEL_OPTIONAL:
+                        printer->Print(vars,
+                                       "if (self.has$capitalized_name$) {\n"
+                                       "  if (!self.$name$.isInitialized) {\n"
+                                       "    return @\"$name$\";\n"
+                                       "  }\n"
+                                       "}\n");
+                        break;
+                    case FieldDescriptor::LABEL_REPEATED:
+                        printer->Print(vars,
+                                       "__block NSString *uninit$name$;\n"
+                                       " [self.$name$ enumerateObjectsUsingBlock:^($type$ *element, NSUInteger idx, BOOL *stop) {\n"
+                                       "  if (!element.isInitialized) {\n"
+                                       "    uninit$name$ = @\"$name$\";\n"
+                                       "    *stop = YES;\n"
+                                       "  }\n"
+                                       "}];\n"
+                                       "if (uninit$name$) return uninit$name$;\n"
+                                       );
+                        break;
+                }
+            }
+        }
+        
+        if (descriptor_->extension_range_count() > 0) {
+            printer->Print(
+                           "if (!self.extensionsAreInitialized) {\n"
+                           "  return @\"extensionsFields\";\n"
+                           "}\n");
+        }
+        
+        printer->Outdent();
+        printer->Print(
+                       "  return nil;\n"
                        "}\n");
     }
 }  // namespace objectivec

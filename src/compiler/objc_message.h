@@ -61,6 +61,7 @@ namespace google {
                     void GenerateCommonBuilderMethodsHeader(io::Printer* printer);
                     void GenerateBuilderParsingMethodsHeader(io::Printer* printer);
                     void GenerateIsInitializedHeader(io::Printer* printer);
+                    void GenerateUninitializedFieldHeader(io::Printer* printer);
                     
                     
                     void GenerateMessageSerializationMethodsSource(io::Printer* printer);
@@ -98,6 +99,7 @@ namespace google {
                     void GenerateCommonBuilderMethodsSource(io::Printer* printer);
                     void GenerateBuilderParsingMethodsSource(io::Printer* printer);
                     void GenerateIsInitializedSource(io::Printer* printer);
+                    void GenerateUninitializedFieldSource(io::Printer* printer);
                     
                     const Descriptor* descriptor_;
                     FieldGeneratorMap field_generators_;

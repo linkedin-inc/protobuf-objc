@@ -43,7 +43,7 @@
 - (void) checkInitialized {
   PBGeneratedMessage* result = self.internalGetResult;
   if (result != nil && !result.isInitialized) {
-    @throw [NSException exceptionWithName:@"UninitializedMessage" reason:@"" userInfo:nil];
+    @throw [NSException exceptionWithName:@"UninitializedMessage" reason:[NSString stringWithFormat:@"Required filed \"%@\" in message \"%@\" not initialized", result.uninitializedField, NSStringFromClass([result class])] userInfo:nil];
   }
 }
 
