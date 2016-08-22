@@ -53,6 +53,12 @@
 - (BOOL) isInitialized;
 
 /**
+ * Returns field name if one of the required fields in the message or
+ * embedded messages is not set, nil otherwise.
+ */
+- (NSString *)uninitializedField;
+
+/**
  * Serializes the message and writes it to {@code output}.  This does not
  * flush or close the stream.
  */
