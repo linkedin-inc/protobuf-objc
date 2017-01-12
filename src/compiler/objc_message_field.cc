@@ -113,8 +113,7 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
                        "}\n"
                        "- (void) setHas$capitalized_name$:(BOOL) _value_ {\n"
                        "  has$capitalized_name$_ = !!_value_;\n"
-                       "}\n"
-                       "@synthesize $name$;\n");
+                       "}\n");
     }
     
     
@@ -316,7 +315,6 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
     
     
     void RepeatedMessageFieldGenerator::GenerateSynthesizeSource(io::Printer* printer) const {
-        printer->Print(variables_, "@synthesize $list_name$;\n");
         printer->Print(variables_, "@dynamic $name$;\n");
     }
     
@@ -335,10 +333,10 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
             
             printer->Print(variables_,
                            "- (NSArray *)$name$ {\n"
-                           "  return $list_name$;\n"
+                           "  return _$list_name$;\n"
                            "}\n"
                            "- ($storage_type$)$name$AtIndex:(NSUInteger)index {\n"
-                           "  return [$list_name$ objectAtIndex:index];\n"
+                           "  return [_$list_name$ objectAtIndex:index];\n"
                            "}\n");
             
         }

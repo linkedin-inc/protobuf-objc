@@ -488,7 +488,8 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
             ("superclass",          "pb_superclass")
             ("class",               "pb_class")
             ("description",         "pb_description")
-            ("debugDescription",    "pb_debugDescription");
+            ("debugDescription",    "pb_debugDescription")
+            ("public",              "pb_public");
         
         NSObjectMap::const_iterator it = keywords.find(name);
         
