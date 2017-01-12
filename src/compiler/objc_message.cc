@@ -274,9 +274,6 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
         for (int i = 0; i < descriptor_->field_count(); i++) {
             field_generators_.get(sorted_fields[i]).GenerateHasFieldHeader(printer);
         }
-        for (int i = 0; i < descriptor_->field_count(); i++) {
-            field_generators_.get(sorted_fields[i]).GenerateFieldHeader(printer);
-        }
         printer->Outdent();
         
         printer->Print("}\n");

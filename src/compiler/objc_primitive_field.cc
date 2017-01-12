@@ -257,9 +257,6 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
     void PrimitiveFieldGenerator::GeneratePropertyHeader(io::Printer* printer) const {
         if (IsReferenceType(GetObjectiveCType(descriptor_))) {
             printer->Print(variables_,"@property (readonly, strong)$storage_attribute$ $storage_type$ $name$;\n");
-        } else if (GetObjectiveCType(descriptor_) == OBJECTIVECTYPE_BOOLEAN) {
-            printer->Print(variables_,
-                           "- (BOOL) $name$;\n");
         } else {
             printer->Print(variables_,
                            "@property (readonly) $storage_type$ $name$;\n");
@@ -286,18 +283,6 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
                        "- (void) setHas$capitalized_name$:(BOOL) _value_ {\n"
                        "  has$capitalized_name$_ = !!_value_;\n"
                        "}\n");
-        
-        if (GetObjectiveCType(descriptor_) == OBJECTIVECTYPE_BOOLEAN) {
-            printer->Print(variables_,
-                           "- (BOOL) $name$ {\n"
-                           "  return !!$name$_;\n"
-                           "}\n"
-                           "- (void) set$capitalized_name$:(BOOL) _value_ {\n"
-                           "  $name$_ = !!_value_;\n"
-                           "}\n");
-        } else {
-            printer->Print(variables_, "@synthesize $name$;\n");
-        }
     }
     
     
@@ -495,7 +480,6 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
     
     
     void RepeatedPrimitiveFieldGenerator::GenerateSynthesizeSource(io::Printer* printer) const {
-        printer->Print(variables_, "@synthesize $list_name$;\n");
         printer->Print(variables_, "@dynamic $name$;\n");
     }
     
@@ -555,18 +539,18 @@ namespace google { namespace protobuf { namespace compiler { namespace objective
         if(isObjectArray(descriptor_)){
             printer->Print(variables_,
                            "- (NSArray *)$name$ {\n"
-                           "  return $list_name$;\n"
+                           "  return _$list_name$;\n"
                            "}\n"
                            "- ($storage_type$)$name$AtIndex:(NSUInteger)index {\n"
-                           "  return [$list_name$ objectAtIndex:index];\n"
+                           "  return [_$list_name$ objectAtIndex:index];\n"
                            "}\n");
         }else{
             printer->Print(variables_,
                            "- (PBArray *)$name$ {\n"
-                           "  return $list_name$;\n"
+                           "  return _$list_name$;\n"
                            "}\n"
                            "- ($storage_type$)$name$AtIndex:(NSUInteger)index {\n"
-                           "  return [$list_name$ $array_value_type_name$AtIndex:index];\n"
+                           "  return [_$list_name$ $array_value_type_name$AtIndex:index];\n"
                            "}\n");
         }
     }
